@@ -39,6 +39,7 @@ export const App = () => {
       setQuery(`${line}${SEPARATOR}${Date.now()}`);
       setPage(1);
       setImages([]);
+      //
       window.scrollTo(0, 0);
     }
   };
