@@ -1,16 +1,80 @@
+import { useState, useEffect } from 'react';
+import { Searchbar } from './Searchbar/Searchbar';
+import { ImageGallery } from './ImageGallery/ImageGallery';
+import { Button } from './Button/Button';
+import { Loader } from './Loader/Loader';
+import './style.css';
+
+import { searchImages } from './API';
+
+const SEPARATOR = '///';
+
 export const App = () => {
+  const [query, setQuery] = useState('');
+  const [images, setImages] = useState([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    if (query !== '') {
+      setLoading(true);
+      async function imageGallery() {
+        try {
+          const [request] = query.split(SEPARATOR);
+          const arrayImage = await searchImages(request, page);
+          if (images.length === 0) {
+            setImages([...arrayImage]);
+          } else {
+            setImages(prev => [...images, ...arrayImage]);
+          }
+        } catch (error) {
+          setError(true);
+        } finally {
+          setLoading(false);
+        }
+      }
+      imageGallery();
+    }
+  }, [page, query]);
+
+  const onSubmit = async line => {
+    if (line !== '') {
+      setQuery(`${line}${SEPARATOR}${Date.now()}`);
+      setPage(1);
+      setImages([]);
+      // Я работаю на Chrome и Opera. И без этого метода в Опере скролл не уходит на верх
+      window.scrollTo(0, 0);
+    }
+  };
+
+  const addElements = async () => {
+    setPage(prevPage => prevPage + 1);
+  };
+
   return (
     <div
       style={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontSize: 40,
-        color: '#010101'
+        margin: '50px 0 0 0',
       }}
+      className="App"
     >
-      React homework template
+      <Searchbar onSubmit={onSubmit} />
+      {images.length > 0 && <ImageGallery images={images} />}
+      {loading && <Loader />}
+      {images.length > 0 && <Button addElements={addElements} />}
+      {error && !loading && (
+        <div
+          style={{
+            textAlign: 'center',
+            color: 'red',
+            fontSize: '40px',
+            fontFamily: 'cursive',
+          }}
+        >
+          ERROR! :c
+        </div>
+      )}
     </div>
   );
 };
