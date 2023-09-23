@@ -39,7 +39,6 @@ export const App = () => {
       setQuery(`${line}${SEPARATOR}${Date.now()}`);
       setPage(1);
       setImages([]);
-      // Я работаю на Chrome и Opera. И без этого метода в Опере скролл не уходит на верх
       window.scrollTo(0, 0);
     }
   };
