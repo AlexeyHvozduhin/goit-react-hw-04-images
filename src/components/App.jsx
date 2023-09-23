@@ -23,11 +23,7 @@ export const App = () => {
         try {
           const [request] = query.split(SEPARATOR);
           const arrayImage = await searchImages(request, page);
-          if (images.length === 0) {
-            setImages([...arrayImage]);
-          } else {
-            setImages(prev => [...images, ...arrayImage]);
-          }
+          setImages(prevImages => [...prevImages, ...arrayImage]);
         } catch (error) {
           setError(true);
         } finally {
